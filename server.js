@@ -140,9 +140,13 @@ app.post("/login", (req, res) => {
             }
 
             // Generate a JWT token
-            const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET_KEY, {
-              expiresIn: "1h",
-            });
+            const token = jwt.sign(
+              { userId: user.id },
+              process.env.JWT_SECRET_KEY,
+              {
+                expiresIn: "1h",
+              }
+            );
 
             // Send the JWT back to the client
             return res.status(200).json({ message: "Login successful", token });
@@ -152,75 +156,6 @@ app.post("/login", (req, res) => {
     });
   });
 });
-
-
-// // API endpoint for forgot password
-// app.post("/forgot-password", (req, res) => {
-//   const { email } = req.body;
-
-//   // Perform validation checks
-//   if (!email) {
-//     return res.status(400).json({ message: "Email is required" });
-//   }
-
-//   // Check if the email exists in the database
-//   pool.query("SELECT * FROM users WHERE email = ?", [email], async (err, results) => {
-//     if (err) {
-//       console.error(err);
-//       return res.status(500).json({ message: "Internal server error" });
-//     }
-
-//     if (results.length === 0) {
-//       return res.status(404).json({ message: "This email is not registered" });
-//     }
-
-//     // Generate OTP
-//     const otp = generateOTP();
-
-//     try {
-//       // Send OTP email
-//       await sendOTPEmail(email, otp);
-
-//       // TODO: Store the OTP in the database for verification
-//       pool.query("INSERT INTO otps (email, otp) VALUES (?, ?)", [email, otp], (err) => {
-//         if (err) {
-//           console.error(err);
-//           return res.status(500).json({ message: "Internal server error" });
-//         }
-//       });
-
-//       return res.status(200).json({ message: "OTP sent to email" });
-//     } catch (error) {
-//       console.error(error);
-//       return res.status(500).json({ message: "Failed to send OTP email" });
-//     }
-//   });
-// });
-
-// // API endpoint for OTP verification
-// app.post("/verify-otp", (req, res) => {
-//   const { email, otp } = req.body;
-
-//   // Retrieve the stored OTP from the database for verification
-//   pool.query("SELECT otp FROM otps WHERE email = ?", [email], (err, results) => {
-//     if (err) {
-//       console.error(err);
-//       return res.status(500).json({ message: "Internal server error" });
-//     }
-
-//     if (results.length === 0) {
-//       return res.status(404).json({ message: "OTP not found" });
-//     }
-
-//     const storedOTP = results[0].otp;
-
-//     if (otp !== storedOTP) {
-//       return res.status(401).json({ message: "Invalid OTP" });
-//     }
-
-//     return res.sendStatus(200);
-//   });
-// });
 
 // API endpoint for forgot password
 app.post("/forgot-password", (req, res) => {
@@ -232,75 +167,86 @@ app.post("/forgot-password", (req, res) => {
   }
 
   // Check if the email exists in the database
-  pool.query("SELECT * FROM users WHERE email = ?", [email], async (err, results) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).json({ message: "Internal server error" });
+  pool.query(
+    "SELECT * FROM users WHERE email = ?",
+    [email],
+    async (err, results) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).json({ message: "Internal server error" });
+      }
+
+      if (results.length === 0) {
+        return res
+          .status(404)
+          .json({ message: "This email is not registered" });
+      }
+
+      // Generate OTP
+      const otp = generateOTP();
+
+      try {
+        // Send OTP email
+        await sendOTPEmail(email, otp);
+
+        // TODO: Store the OTP in the database for verification
+        pool.query(
+          "INSERT INTO otps (email, otp) VALUES (?, ?)",
+          [email, otp],
+          (err) => {
+            if (err) {
+              console.error(err);
+              return res.status(500).json({ message: "Internal server error" });
+            }
+          }
+        );
+
+        return res.status(200).json({ message: "OTP sent to email" });
+      } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: "Failed to send OTP email" });
+      }
     }
-
-    if (results.length === 0) {
-      return res.status(404).json({ message: "This email is not registered" });
-    }
-
-    // Generate OTP
-    const otp = generateOTP();
-
-    try {
-      // Send OTP email
-      await sendOTPEmail(email, otp);
-
-      // TODO: Store the OTP in the database for verification
-      pool.query("INSERT INTO otps (email, otp) VALUES (?, ?)", [email, otp], (err) => {
-        if (err) {
-          console.error(err);
-          return res.status(500).json({ message: "Internal server error" });
-        }
-      });
-
-      return res.status(200).json({ message: "OTP sent to email" });
-    } catch (error) {
-      console.error(error);
-      return res.status(500).json({ message: "Failed to send OTP email" });
-    }
-  });
+  );
 });
 
 // API endpoint for OTP verification
 app.post("/verify-otp/:email", (req, res) => {
   const { email, otp } = req.body;
 
-  console.log('Received email:', email);
-  console.log('Received OTP:', otp);
+  console.log("Received email:", email);
+  console.log("Received OTP:", otp);
 
   // TODO: Perform OTP verification logic here
   // Retrieve the stored OTP from the database for verification
-  pool.query("SELECT otp FROM otps WHERE email = ? ORDER BY created_at DESC LIMIT 1", [email], (err, results) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).json({ message: "Internal server error" });
+  pool.query(
+    "SELECT otp FROM otps WHERE email = ? ORDER BY created_at DESC LIMIT 1",
+    [email],
+    (err, results) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).json({ message: "Internal server error" });
+      }
+
+      console.log("Database results:", results);
+
+      if (results.length === 0) {
+        return res.status(404).json({ message: "OTP not found" });
+      }
+
+      const storedOTP = results[0].otp;
+
+      console.log("Stored OTP:", storedOTP);
+
+      if (otp !== storedOTP) {
+        return res.status(401).json({ message: "Invalid OTP" });
+      }
+
+      console.log("OTP verification successful");
+      return res.sendStatus(200);
     }
-
-    console.log('Database results:', results);
-
-    if (results.length === 0) {
-      return res.status(404).json({ message: "OTP not found" });
-    }
-
-    const storedOTP = results[0].otp;
-
-    console.log('Stored OTP:', storedOTP);
-
-    if (otp !== storedOTP) {
-      return res.status(401).json({ message: "Invalid OTP" });
-    }
-
-    console.log('OTP verification successful');
-    return res.sendStatus(200);
-  });
+  );
 });
-
-
-
 
 // API endpoint for change password
 app.post("/change-password/:email", (req, res) => {
@@ -329,12 +275,13 @@ app.post("/change-password/:email", (req, res) => {
           return res.status(500).json({ message: "Internal server error" });
         }
 
-        return res.status(200).json({ message: "Password changed successfully" });
+        return res
+          .status(200)
+          .json({ message: "Password changed successfully" });
       }
     );
   });
 });
-
 
 // Protected route example
 app.get("/protected", authenticateToken, (req, res) => {
