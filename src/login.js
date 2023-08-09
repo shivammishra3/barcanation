@@ -65,7 +65,7 @@ const Login = () => {
             {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
             <div className="register">
               <p>
-                Don't have an account ?<a href="/signup"> Sign Up</a>
+                Don't have an account ? <Link to="/signup"> Sign Up</Link>
               </p>
             </div>
           </form>
