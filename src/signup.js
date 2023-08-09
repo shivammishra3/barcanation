@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 import './signup.css';
 
@@ -144,49 +145,53 @@ const Signup = () => {
       setPasswordError('');
     }
   };
-
+  
   return (
-    <div className="signup-form">
-      <h2>Create a New Account</h2>
-      <form onSubmit={handleSignupSubmit}>
-        <label>
-          First Name:
-          <input type="text" value={firstName} onChange={handleFirstNameChange} />
-          {firstNameError && <span className="error">{firstNameError}</span>}
-        </label>
-        <br />
-        <label>
-          Last Name:
-          <input type="text" value={lastName} onChange={handleLastNameChange} />
-          {lastNameError && <span className="error">{lastNameError}</span>}
-        </label>
-        <br />
-        <label>
-          Email:
-          <input type="email" value={email} onChange={handleEmailChange} />
-          {emailError && <span className="error">{emailError}</span>}
-        </label>
-        <br />
-        <label>
-          Password:
-          <input type="password" value={password} onChange={handlePasswordChange} />
-          {passwordError && <span className="error">{passwordError}</span>}
-        </label>
-        <br />
-        <label>
-          Gender: (optional)
-          <select value={gender} onChange={(e) => setGender(e.target.value)}>
-            <option value="">Select</option>
-            <option value="female">Male</option>
-            <option value="male">Female</option>
-            <option value="other">Other</option>
-          </select>
-        </label>
-        <br />
-        <button type="submit">Sign Up</button>
-      </form>
-      {signupSuccess && <p className="success">Signup successful</p>}
-    </div>
+    <section>
+      <div className="form-box">
+        <div className="form-value">
+          <form onSubmit={handleSignupSubmit}>
+            <h2>Sign up</h2>
+
+            <div className="inputbox">
+              <ion-icon name="mail-outline"></ion-icon>
+              <input type="text" value={firstName} onChange={handleFirstNameChange} required/>
+              <label htmlFor="text">First Name</label>
+              {firstNameError && <span className="error">{firstNameError}</span>}
+            </div>
+            
+            <div className="inputbox">
+              <ion-icon name="mail-outline"></ion-icon>
+              <input type="text" value={lastName} onChange={handleLastNameChange} required/>
+              <label htmlFor="email">Last Name</label>
+              {lastNameError && <span className="error">{lastNameError}</span>}
+            </div>
+
+            <div className="inputbox">
+              <ion-icon name="mail-outline"></ion-icon>
+              <input type="email" value={email} onChange={handleEmailChange} required/>
+              <label htmlFor="email">Email</label>
+              {emailError && <span className="error">{emailError}</span>}
+            </div>
+
+            <div className="inputbox">
+              <ion-icon name="lock-closed-outline"></ion-icon>
+              <input type="password" value={password} onChange={handlePasswordChange} required/>
+              <label htmlFor="password">Password</label>
+              {passwordError && <span className="error">{passwordError}</span>}
+            </div>
+
+            <button type="submit">Sign Up</button>
+            {signupSuccess && <p className="success">Signup successful</p>}
+            <div className="register">
+              <p>
+                Already having an account ?<a href="/login"> Login</a>
+              </p>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
   );
 };
 
