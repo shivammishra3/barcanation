@@ -7,7 +7,6 @@ const Signup = () => {
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [gender, setGender] = useState('');
   const [firstNameError, setFirstNameError] = useState('');
   const [lastNameError, setLastNameError] = useState('');
   const [emailError, setEmailError] = useState('');
@@ -84,7 +83,6 @@ const Signup = () => {
         lastName: lastName,
         email: email,
         password: password,
-        gender: gender,
       });
 
       setSignupSuccess(true);
@@ -98,7 +96,6 @@ const Signup = () => {
     console.log('Last Name:', lastName);
     console.log('Email:', email);
     console.log('Password:', password);
-    console.log('Gender:', gender);
   };
 
   const handleFirstNameChange = (e) => {

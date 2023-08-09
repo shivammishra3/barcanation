@@ -6,6 +6,14 @@ const cors = require("cors");
 const nodemailer = require("nodemailer");
 require("dotenv").config();
 
+console.log("DB_HOST:", process.env.DB_HOST);
+console.log("DB_USER:", process.env.DB_USER);
+console.log("DB_PASSWORD:", process.env.DB_PASSWORD);
+console.log("DB_NAME:", process.env.DB_NAME);
+
+
+
+
 // Middleware to parse incoming JSON data
 app.use(express.json());
 
@@ -27,6 +35,17 @@ const dbConfig = {
 // Create a MySQL connection pool
 const mysql = require("mysql");
 const pool = mysql.createPool(dbConfig);
+
+// Test the database connection
+pool.getConnection((err, connection) => {
+  if (err) {
+    console.error("Error connecting to the database:", err);
+  } else {
+    console.log("Connected to the database!");
+    connection.release(); // Release the connection
+  }
+});
+
 
 // Create a nodemailer transporter
 const transporter = nodemailer.createTransport({
