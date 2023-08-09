@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
-import './signup.css';
+import './login.css';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -41,28 +41,37 @@ const Login = () => {
   };
 
   return (
-    <div className="signup-form">
-      <h2>Login</h2>
-      <form onSubmit={handleLoginSubmit}>
-        <div>
-          <label htmlFor="email">Email:</label>
-          <input type="email" id="email" name="email" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="off" />
+    <section>
+      <div className="form-box">
+        <div className="form-value">
+          <form onSubmit={handleLoginSubmit}>
+            <h2>Login</h2>
+            <div className="inputbox">
+              <ion-icon name="mail-outline"></ion-icon>
+              <input type="email" id="email" name="email" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="off" required />
+              <label htmlFor="email">Email</label>
+            </div>
+            <div className="inputbox">
+              <ion-icon name="lock-closed-outline"></ion-icon>
+              <input type="password" id="password" name="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+              <label htmlFor="password">Password</label>
+            </div>
+            <div className="forget">
+              <label htmlFor="password">
+              <Link to="/forgot-password">Forgot Password ?</Link>
+              </label>
+            </div>
+            <button type="submit">Login</button>
+            {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+            <div className="register">
+              <p>
+                Don't have an account ?<a href="/signup"> Sign Up</a>
+              </p>
+            </div>
+          </form>
         </div>
-        <div>
-          <label htmlFor="password">Password:</label>
-          <input type="password" id="password" name="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-        </div>
-        <div>
-          <button type="submit">Login</button>
-          <Link to="/forgot-password">Forgot Password?</Link>
-        </div>
-      </form>
-      {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
-      <div>
-        <p>Don't have an account?</p>
-        <button><Link to="/signup">Sign Up</Link></button>
       </div>
-    </div>
+    </section>
   );
 };
 
